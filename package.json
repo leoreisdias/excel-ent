@@ -1,0 +1,22 @@
+{
+  "name": "excel-ent",
+  "version": "1.0.0",
+  "description": "The purpose of this lib is to help you export data in Excel and CSV.",
+  "author": "leonardord99@outlook.com",
+  "license": "MIT",
+  "main": "js/index.js",
+  "typings": "js/index",
+  "scripts": {
+    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules index.ts",
+    "build": "tsc index.ts",
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^16.4.6",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "fs": "^0.0.1-security"
+  }
+}
