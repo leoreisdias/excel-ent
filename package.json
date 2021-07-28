@@ -6,6 +6,10 @@
   "license": "MIT",
   "main": "js/index.js",
   "typings": "js/index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leoreisdias/excel-ent.git"
+  },
   "scripts": {
     "dev": "ts-node-dev --transpile-only --ignore-watch node_modules index.ts",
     "build": "tsc index.ts",
