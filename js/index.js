@@ -1,7 +1,6 @@
 "use strict";
 exports.__esModule = true;
 exports.exportmeToCsv = exports.exportmeExcel = void 0;
-var buffer_1 = require("buffer");
 var exportmeExcel = function (data, fileName) {
     if (!Array.isArray(data) ||
         typeof fileName !== "string" ||
@@ -15,7 +14,7 @@ var exportmeExcel = function (data, fileName) {
         table: objectToTable(data)
     };
     var buildedOutput = TEMPLATE_XLS.replace(/{(\w+)}/g, function (x, y) { return parameters[y]; });
-    var excelBuild = new buffer_1.Blob([buildedOutput], {
+    var excelBuild = new Blob([buildedOutput], {
         type: MIME_XLS
     });
     var excelLink = window.URL.createObjectURL(excelBuild);
@@ -27,7 +26,7 @@ var exportmeToCsv = function (data, fileName) {
         Object.prototype.toString.call(fileName) !== "[object String]") {
         throw new Error("Invalid input types: First Params should be an Array and the second one a String");
     }
-    var computedCSV = new buffer_1.Blob([objectToSemicolons(data)], {
+    var computedCSV = new Blob([objectToSemicolons(data)], {
         type: "text/csv;charset=utf-8"
     });
     var csvLink = window.URL.createObjectURL(computedCSV);
