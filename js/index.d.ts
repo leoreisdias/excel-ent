@@ -1,2 +1,2 @@
-export declare const exportmeExcel: () => void;
-export declare const exportmeToCsv: () => void;
+export declare const exportmeExcel: (data: any[], fileName: string) => void;
+export declare const exportmeToCsv: (data: any[], fileName: string) => void;

@@ -1,12 +1,12 @@
-# Excel-ent (by NumPod)
+# Excel-ent
 
 ## Description
 
 [excel-ent](https://github.com/leoreisdias/excel-ent.git) is a helper lib to export data in XLS and CSV.
 
-<!-- ## Installation
+## Installation
 
-```bash
+<!-- ```bash
 $ npm install @numpod/excel-ent --save
 
 # or with yarn
