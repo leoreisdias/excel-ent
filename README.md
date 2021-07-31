@@ -6,13 +6,13 @@
 
 ## Installation
 
-<!-- ```bash
+```bash
 $ npm install @numpod/excel-ent --save
 
 # or with yarn
 
 $ yarn add @numpod/excel-ent
-``` -->
+```
 
 ## Using ezdate
 

@@ -1,9 +1,11 @@
 {
   "name": "@numpod/excel-ent",
-  "version": "1.0.2",
+  "version": "1.0.7",
   "description": "The purpose of this lib is to help you export data in Excel and CSV.",
   "author": "numtapodendo@gmail.com",
-  "publishConfig": {"access": "public"},
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
   "main": "js/index.js",
   "typings": "js/index.d.ts",

@@ -27,12 +27,18 @@ export const exportmeExcel = (data: any[], fileName: string) => {
     (x, y) => parameters[y]
   );
 
-  const excelBuild = new Blob([buildedOutput], {
-    type: MIME_XLS,
-  });
+  if (window) {
+    const excelBuild = new Blob([buildedOutput], {
+      type: MIME_XLS,
+    });
 
-  const excelLink = window.URL.createObjectURL(excelBuild);
-  downloadFile(excelLink, fileName);
+    const excelLink = window.URL.createObjectURL(excelBuild);
+    downloadFile(excelLink, fileName);
+  } else {
+    throw new Error(
+      "Window is not definided: You must be using it in a brownser"
+    );
+  }
 };
 
 export const exportmeToCsv = (data: any[], fileName: string) => {
@@ -44,12 +50,19 @@ export const exportmeToCsv = (data: any[], fileName: string) => {
       "Invalid input types: First Params should be an Array and the second one a String"
     );
   }
-  const computedCSV = new Blob([objectToSemicolons(data)], {
-    type: "text/csv;charset=utf-8",
-  });
 
-  const csvLink = window.URL.createObjectURL(computedCSV);
-  downloadFile(csvLink, fileName);
+  if (window) {
+    const computedCSV = new Blob([objectToSemicolons(data)], {
+      type: "text/csv;charset=utf-8",
+    });
+
+    const csvLink = window.URL.createObjectURL(computedCSV);
+    downloadFile(csvLink, fileName);
+  } else {
+    throw new Error(
+      "Window is not definided: You must be using it in a brownser"
+    );
+  }
 };
 
 function objectToSemicolons(data: any[]) {
@@ -92,19 +105,3 @@ function downloadFile(output: string, fileName: string) {
   link.href = output;
   link.click();
 }
-
-console.log(
-  exportmeExcel(
-    [
-      {
-        id: 1,
-        nome: "Leonardo",
-      },
-      {
-        id: 2,
-        name: "jose",
-      },
-    ],
-    "Teste de Excel"
-  )
-);

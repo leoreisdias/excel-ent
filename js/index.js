@@ -14,11 +14,16 @@ var exportmeExcel = function (data, fileName) {
         table: objectToTable(data)
     };
     var buildedOutput = TEMPLATE_XLS.replace(/{(\w+)}/g, function (x, y) { return parameters[y]; });
-    var excelBuild = new Blob([buildedOutput], {
-        type: MIME_XLS
-    });
-    var excelLink = window.URL.createObjectURL(excelBuild);
-    downloadFile(excelLink, fileName);
+    if (window) {
+        var excelBuild = new Blob([buildedOutput], {
+            type: MIME_XLS
+        });
+        var excelLink = window.URL.createObjectURL(excelBuild);
+        downloadFile(excelLink, fileName);
+    }
+    else {
+        throw new Error("Window is not definided: You must be using it in a brownser");
+    }
 };
 exports.exportmeExcel = exportmeExcel;
 var exportmeToCsv = function (data, fileName) {
@@ -26,11 +31,16 @@ var exportmeToCsv = function (data, fileName) {
         Object.prototype.toString.call(fileName) !== "[object String]") {
         throw new Error("Invalid input types: First Params should be an Array and the second one a String");
     }
-    var computedCSV = new Blob([objectToSemicolons(data)], {
-        type: "text/csv;charset=utf-8"
-    });
-    var csvLink = window.URL.createObjectURL(computedCSV);
-    downloadFile(csvLink, fileName);
+    if (window) {
+        var computedCSV = new Blob([objectToSemicolons(data)], {
+            type: "text/csv;charset=utf-8"
+        });
+        var csvLink = window.URL.createObjectURL(computedCSV);
+        downloadFile(csvLink, fileName);
+    }
+    else {
+        throw new Error("Window is not definided: You must be using it in a brownser");
+    }
 };
 exports.exportmeToCsv = exportmeToCsv;
 function objectToSemicolons(data) {
@@ -66,13 +76,3 @@ function downloadFile(output, fileName) {
     link.href = output;
     link.click();
 }
-console.log(exports.exportmeExcel([
-    {
-        id: 1,
-        nome: "Leonardo"
-    },
-    {
-        id: 2,
-        name: "jose"
-    },
-], "Teste de Excel"));
