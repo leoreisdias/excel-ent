@@ -20,7 +20,7 @@ $ npm install @numpod/excel-ent --save
 $ yarn add @numpod/excel-ent
 ```
 
-## Using ezdate
+## Using excel-ent
 
 Two main functions - exportmeToCsv & exportmeExcel
 
