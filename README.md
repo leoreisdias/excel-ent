@@ -111,10 +111,6 @@ const data = [
 exportmeToCSV(data, "MyReport");
 
 ```
----
-```fix
-Last fux
-```
 
 ---
 
