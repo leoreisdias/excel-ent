@@ -1,6 +1,6 @@
 {
   "name": "@numpod/excel-ent",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "The purpose of this lib is to help you export data in Excel and CSV.",
   "author": "Leonardo R. Dias",
   "publishConfig": {

@@ -3,7 +3,7 @@ import * as CSS from "csstype";
 export const exportmeExcel = (
   data: any[],
   fileName: string,
-  options?: { headerStyle: CSS.Properties; bodyStyle: CSS.Properties }
+  options?: { headerStyle?: CSS.Properties; bodyStyle?: CSS.Properties }
 ) => {
   if (
     !Array.isArray(data) ||
