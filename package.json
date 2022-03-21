@@ -26,7 +26,7 @@
     "url": "git+https://github.com/leoreisdias/excel-ent.git"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc ts/index.ts",
     "prepare": "npm run build",
     "version": "git add -A ts",
     "postversion": "git push && git push --tags"
