@@ -1,7 +1,7 @@
 # Excel-ent
 
-[![NPM](https://img.shields.io/npm/v/@numpod/excel-ent)](https://www.npmjs.com/package/@numpod/excel-ent)
-[![npm](https://img.shields.io/npm/l/@numpod/excel-ent)](https://github.com/leoreisdias/excel-ent/blob/main/LICENSE)
+[![NPM](https://img.shields.io/npm/v/excel-ent)](https://www.npmjs.com/package/@numpod/excel-ent)
+[![npm](https://img.shields.io/npm/l/excel-ent)](https://github.com/leoreisdias/excel-ent/blob/main/LICENSE)
 
 ## Description
 
@@ -10,11 +10,11 @@
 ## Installation
 
 ```bash
-$ yarn add @numpod/excel-ent
+$ yarn add excel-ent
 
 # or with npm
 
-$ npm install @numpod/excel-ent --save
+$ npm install excel-ent --save
 ```
 
 ## Using excel-ent
@@ -41,7 +41,7 @@ Optional, receives two attributes: <i>bodyStyle</i> and <i>headerStyle</i>
 ### Example
 
 ```js
-import { exportmeExcel } from "@numpod/excel-ent";
+import { exportmeExcel } from "excel-ent";
 
 const data = [
   {
@@ -88,7 +88,7 @@ Required, name of the archive generated
 ### Example
 
 ```js
-import { exportmeToCsv } from "@numpod/excel-ent";
+import { exportmeToCsv } from "excel-ent";
 
 const data = [
   {
@@ -120,7 +120,7 @@ Last fux
 
 ## License
 
-@numpod/excel-ent is [MIT licensed](LICENSE).
+excel-ent is [MIT licensed](LICENSE).
 
 ---
 
