@@ -5,6 +5,7 @@
 </p>
 
 [![NPM](https://img.shields.io/npm/v/@numpod/excel-ent)](https://www.npmjs.com/package/@numpod/excel-ent)
+[![npm](https://img.shields.io/npm/l/@numpod/excel-ent)](https://github.com/leoreisdias/excel-ent/blob/main/LICENSE)
 
 ## Description
 
@@ -80,7 +81,7 @@ exportmeExcel(data, 'test', {
 
 exportmeToCsv(data: any[], title: string)
 
-#### Parameters
+### Parameters
 
 `data`
 Required, must be an array of Object
@@ -88,7 +89,7 @@ Required, must be an array of Object
 `title`
 Required, name of the archive generated
 
-#### Example
+### Example
 
 ```js
 import { exportmeToCsv } from "@numpod/excel-ent";
@@ -113,6 +114,10 @@ const data = [
 
 exportmeToCSV(data, "MyReport");
 
+```
+---
+```fix
+Last fux
 ```
 
 ---
