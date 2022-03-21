@@ -1,9 +1,5 @@
 # Excel-ent
 
-<p align="left">
-  <a href="#" target="blank"><img src="https://i.imgur.com/vkTQF5g.jpg" width="100" alt="NUMPOD" /></a>
-</p>
-
 [![NPM](https://img.shields.io/npm/v/@numpod/excel-ent)](https://www.npmjs.com/package/@numpod/excel-ent)
 [![npm](https://img.shields.io/npm/l/@numpod/excel-ent)](https://github.com/leoreisdias/excel-ent/blob/main/LICENSE)
 
