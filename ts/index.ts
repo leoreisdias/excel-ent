@@ -1,9 +1,14 @@
 import * as CSS from "csstype";
 
+export interface IExportmeExcelOptions {
+  headerStyle?: CSS.Properties;
+  bodyStyle?: CSS.Properties;
+}
+
 export const exportmeExcel = (
   data: any[],
   fileName: string,
-  options?: { headerStyle?: CSS.Properties; bodyStyle?: CSS.Properties }
+  options?: IExportmeExcelOptions
 ) => {
   if (
     !Array.isArray(data) ||
