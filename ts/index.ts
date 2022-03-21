@@ -1,4 +1,10 @@
-export const exportmeExcel = (data: any[], fileName: string) => {
+import * as CSS from "csstype";
+
+export const exportmeExcel = (
+  data: any[],
+  fileName: string,
+  options?: { headerStyle: CSS.Properties; bodyStyle: CSS.Properties }
+) => {
   if (
     !Array.isArray(data) ||
     typeof fileName !== "string" ||
@@ -10,7 +16,7 @@ export const exportmeExcel = (data: any[], fileName: string) => {
   }
 
   const TEMPLATE_XLS = `
-      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="https://www.w3.org/TR/html40">
       <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8"/>
       <head><!--[if gte mso 9]><xml>
       <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{title}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml>
@@ -18,9 +24,9 @@ export const exportmeExcel = (data: any[], fileName: string) => {
       <body>{table}</body></html>`;
   const MIME_XLS = "application/vnd.ms-excel;base64,";
 
-  const parameters = {
+  const parameters: any = {
     fileName,
-    table: objectToTable(data),
+    table: objectToTable(data, options?.headerStyle, options?.bodyStyle),
   };
   const buildedOutput = TEMPLATE_XLS.replace(
     /{(\w+)}/g,
@@ -36,7 +42,7 @@ export const exportmeExcel = (data: any[], fileName: string) => {
     downloadFile(excelLink, fileName);
   } else {
     throw new Error(
-      "Window is not definided: You must be using it in a brownser"
+      "Window is not definided: You must be using it in a browser"
     );
   }
 };
@@ -60,7 +66,7 @@ export const exportmeToCsv = (data: any[], fileName: string) => {
     downloadFile(csvLink, fileName);
   } else {
     throw new Error(
-      "Window is not definided: You must be using it in a brownser"
+      "Window is not definided: You must be using it in a browser"
     );
   }
 };
@@ -80,16 +86,30 @@ function objectToSemicolons(data: any[]) {
   return `${colsHead}\n${colsData}`;
 }
 
-function objectToTable(data: any[]) {
+function objectToTable(
+  data: any[],
+  headerStyle?: CSS.Properties,
+  bodyStyle?: CSS.Properties
+) {
   const colsHead = `<tr>${Object.keys(data[0])
-    .map((key) => `<td>${key}</td>`)
+    .map(
+      (key) =>
+        `<td align="center" style="${cssPropertyToStyleString(
+          headerStyle
+        )}"><b>${key.toUpperCase()}</b></td>`
+    )
     .join("")}</tr>`;
 
   const colsData = data
     .map((obj) => [
       `<tr>
               ${Object.keys(obj)
-                .map((col) => `<td>${obj[col] ? obj[col] : ""}</td>`)
+                .map(
+                  (col) =>
+                    `<td style="${cssPropertyToStyleString(bodyStyle)}">${
+                      obj[col] ? obj[col] : ""
+                    }</td>`
+                )
                 .join("")}
           </tr>`,
     ])
@@ -104,4 +124,16 @@ function downloadFile(output: string, fileName: string) {
   link.download = fileName;
   link.href = output;
   link.click();
+}
+
+function cssPropertyToStyleString(cssObject?: any) {
+  if (!cssObject) return;
+
+  return Object.keys(cssObject)
+    .map(
+      (key) =>
+        key.replace(/[A-Z]/g, (property) => `-${property.toLowerCase()}`) +
+        `:${cssObject[key]}`
+    )
+    .join(";");
 }

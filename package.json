@@ -1,6 +1,6 @@
 {
   "name": "@numpod/excel-ent",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "description": "The purpose of this lib is to help you export data in Excel and CSV.",
   "author": "Leonardo R. Dias",
   "publishConfig": {
@@ -26,7 +26,10 @@
     "url": "git+https://github.com/leoreisdias/excel-ent.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "prepare": "npm run build",
+    "version": "git add -A ts",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
     "@types/node": "^16.4.6",
@@ -38,6 +41,7 @@
     "url": "https://github.com/leoreisdias/excel-ent/issues"
   },
   "dependencies": {
+    "csstype": "^3.0.11",
     "ts-node": "^9.1.1"
   }
 }

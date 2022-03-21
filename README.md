@@ -13,20 +13,20 @@
 ## Installation
 
 ```bash
-$ npm install @numpod/excel-ent --save
-
-# or with yarn
-
 $ yarn add @numpod/excel-ent
+
+# or with npm
+
+$ npm install @numpod/excel-ent --save
 ```
 
 ## Using excel-ent
 
-Two main functions - exportmeToCsv & exportmeExcel
+Two main functions <b>exportmeExcel</b> & <b>exportmeToCsv</b> 
 
 ### exportmeExcel
 
-exportmeExcel(data: any[], title: string)
+exportmeExcel(data: any[], title: string, options?: CSS.Properties)
 
 #### Parameters
 
@@ -36,7 +36,12 @@ Required, must be an array of Object
 `title`
 Required, name of the archive generated
 
-#### Example
+`options`
+Optional, receives two attributes: <i>bodyStyle</i> and <i>headerStyle</i>
+
+- `bodyStyle` and `headerStyle`: Both receives CSS Properties in <b>camelCase</b> and provide style for the header and body in the Excel File
+
+### Example
 
 ```js
 import { exportmeExcel } from "@numpod/excel-ent";
@@ -44,25 +49,30 @@ import { exportmeExcel } from "@numpod/excel-ent";
 const data = [
   {
     id: 1,
-    name: "Some Name",
+    name: 'Some Name',
     age: 21,
   },
   {
     id: 2,
-    name: "Some New Name",
+    name: 'Some New Name',
     age: 23,
   },
   {
     id: 3,
-    name: "Some Name Again",
+    name: 'Some Name Again',
     age: 22,
   },
 ];
 
-function handleExport() {
-  exportmeExcel(data, "MyReport");
-}
+exportmeExcel(data, 'test', {
+  bodyStyle: { fontSize: '20px' },
+  headerStyle: { fontSize: '40px' },
+});
+
 ```
+
+### Example output
+<img src="./excel-ent-example.png" alt="Example Output - Excel Screenshot" />
 
 ---
 
@@ -101,9 +111,8 @@ const data = [
   },
 ];
 
-function handleExport() {
-  exportmeToCSV(data, "MyReport");
-}
+exportmeToCSV(data, "MyReport");
+
 ```
 
 ---
@@ -111,3 +120,7 @@ function handleExport() {
 ## License
 
 @numpod/excel-ent is [MIT licensed](LICENSE).
+
+---
+
+## Thank you and be free to contribute.
