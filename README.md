@@ -1,6 +1,6 @@
 # Excel-ent
 
-[![NPM](https://img.shields.io/npm/v/excel-ent)](https://www.npmjs.com/package/@numpod/excel-ent)
+[![NPM](https://img.shields.io/npm/v/excel-ent)](https://www.npmjs.com/package/excel-ent)
 [![npm](https://img.shields.io/npm/l/excel-ent)](https://github.com/leoreisdias/excel-ent/blob/main/LICENSE)
 
 ## Description
