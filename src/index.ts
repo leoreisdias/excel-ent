@@ -34,6 +34,7 @@ export const exportmeExcel = (
     fileName,
     table: objectToTable(data, options?.headerStyle, options?.bodyStyle),
   };
+  
   const buildedOutput = TEMPLATE_XLS.replace(
     /{(\w+)}/g,
     (x, y) => parameters[y]
