@@ -12,8 +12,7 @@
     "build": "tsc",
     "prepare": "npm run build",
     "version": "git add -A src",
-    "postversion": "git push && git push --tags",
-    "semantic-release": "semantic-release"
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "csstype": "^3.0.11",
@@ -23,7 +22,6 @@
     "@types/node": "^16.4.6",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.3.5",
-    "semantic-release": "^21.0.1"
   },
   "files": [
     "lib/**/*"
