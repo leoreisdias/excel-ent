@@ -101,7 +101,7 @@ function objectToTable(
       (key) =>
         `<td align="center" style="${cssPropertyToStyleString(
           headerStyle
-        )}"><b>${key.toUpperCase()}</b></td>`
+        )}"><b>${key}</b></td>`
     )
     .join("")}</tr>`;
 
