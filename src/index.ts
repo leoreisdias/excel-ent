@@ -27,6 +27,7 @@ export const exportmeExcel = (
       <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{title}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml>
       <![endif]--></head>
       <body>{table}</body></html>`;
+      
   const MIME_XLS = "application/vnd.ms-excel;base64,";
 
   const parameters: any = {
