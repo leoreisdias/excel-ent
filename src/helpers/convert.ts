@@ -19,7 +19,7 @@ export const convertType = (
   }
 };
 
-export function downloadFile(output: string, fileName: string) {
+export function downloadFile(output: string, fileName: string): void {
   const link = document.createElement('a');
   document.body.appendChild(link);
   link.download = fileName;
