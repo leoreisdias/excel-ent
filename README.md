@@ -371,3 +371,5 @@ Special thanks to the following libraries for their invaluable contributions:
 
 - [xlsx-js-style](https://github.com/gitbrent/xlsx-js-style): This library played a pivotal role in enabling us to seamlessly incorporate styling and formatting options into Excel-ent.
 
+
+### Thank you and be free to contribute
