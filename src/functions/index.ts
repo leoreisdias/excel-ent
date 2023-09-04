@@ -84,8 +84,8 @@ export const exportmeExcelAdvanced = ({
           Tooltip: cell.hyperlink?.tooltip,
         },
         s: {
-          ...(cell.style ?? {}),
           ...headerStyle,
+          ...(cell.style ?? {}),
         },
         z:
           cell.type === 'number' || cell.type === 'date'
@@ -115,8 +115,8 @@ export const exportmeExcelAdvanced = ({
             Tooltip: cell.hyperlink.tooltip,
           },
           s: {
-            ...(cell.style ?? {}),
             ...bodyStyle,
+            ...(cell.style ?? {}),
           },
           z:
             cell.type === 'number' || cell.type === 'date'
