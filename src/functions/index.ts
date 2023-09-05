@@ -1,190 +1,150 @@
 import * as XLSX from 'xlsx-js-style';
 
+import { downloadFile, objectToSemicolons } from '../helpers/convert';
 import {
-  convertType,
-  downloadFile,
-  objectToSemicolons,
-} from '../helpers/convert';
+    transformIntoCellObject,
+    transposeMatrixWithPadding,
+} from '../helpers/transform';
 import {
-  ExportationType,
-  ExportMeExcelAdvancedProps,
-  ExportMeExcelOptions,
+    ExportationType,
+    ExportMeContent,
+    ExportMeExcelAdvancedProps,
+    ExportMeExcelOptions,
+    MergeProps,
 } from '../types';
 
-const validateData = (data: any[], fileName: string) => {
-  if (
-    !Array.isArray(data) ||
-    typeof fileName !== 'string' ||
-    Object.prototype.toString.call(fileName) !== '[object String]'
-  ) {
-    throw new Error(
-      'Invalid input types: First Params should be an Array and the second one a String',
-    );
-  }
-};
+const executeXLSX = (
+    data: XLSX.CellObject[][],
+    columnWidths?: number[],
+    merges?: MergeProps[],
+) => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = columnWidths?.map((width) => ({ width }));
+    ws['!merges'] = merges?.map((item) => ({
+        s: { r: item.start.row, c: item.start.column },
+        e: { r: item.end.row, c: item.end.column },
+    }));
 
-const executeXLSX = (data: XLSX.CellObject[][], columnWidths?: number[]) => {
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = columnWidths?.map(width => ({ width }));
-  XLSX.utils.book_append_sheet(wb, ws);
+    XLSX.utils.book_append_sheet(wb, ws);
 
-  return wb;
+    return wb;
 };
 
 const exportFile = (
-  exportAs: ExportationType,
-  wb: XLSX.WorkBook,
-  fileName: string,
+    exportAs: ExportationType,
+    wb: XLSX.WorkBook,
+    fileName: string,
 ) => {
-  if (exportAs.type === 'base64') {
-    return XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
-  }
+    if (exportAs.type === 'base64') {
+        return XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+    }
 
-  if (exportAs.type === 'buffer') {
-    return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
-  }
+    if (exportAs.type === 'buffer') {
+        return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    }
 
-  if (exportAs.type === 'download') {
-    return XLSX.writeFile(wb, `${fileName}.xlsx`);
-  }
+    if (exportAs.type === 'download') {
+        return XLSX.writeFile(wb, `${fileName}.xlsx`);
+    }
 
-  if (exportAs.type === 'filepath') {
-    return XLSX.writeFile(wb, exportAs.path);
-  }
+    if (exportAs.type === 'filepath') {
+        return XLSX.writeFile(wb, exportAs.path);
+    }
+};
+
+const getRowsStructure = (
+    content: ExportMeContent[][],
+    basedStructure: 'rows' | 'columns',
+): ExportMeContent[][] => {
+    if (basedStructure === 'rows') {
+        return content;
+    }
+
+    const columnsToRows = transposeMatrixWithPadding(content);
+
+    return columnsToRows;
 };
 
 export const exportmeExcelAdvanced = ({
-  fileName,
-  headers = [],
-  rows,
-  options,
-  exportAs,
+    fileName,
+    data,
+    options,
+    exportAs,
+    merges,
 }: ExportMeExcelAdvancedProps) => {
-  const {
-    bodyStyle = {},
-    columnWidths,
-    headerStyle = {},
-    sheetProps,
-  } = options ?? {};
+    const {
+        bodyStyle = {},
+        columnWidths,
+        headerStyle = {},
+        sheetProps,
+    } = options ?? {};
 
-  const headerXLSX: XLSX.CellObject[] = headers.map(
-    cell =>
-      ({
-        t: convertType(cell.type),
-        v: cell.value,
-        c: cell.comment?.map(comment => ({
-          a: comment.author,
-          t: comment.text,
-        })),
-        F: cell.formulaRange,
-        f: cell.formula,
-        l: cell.hyperlink && {
-          Target: cell.hyperlink?.target,
-          Tooltip: cell.hyperlink?.tooltip,
-        },
-        s: {
-          ...headerStyle,
-          ...(cell.style ?? {}),
-        },
-        z:
-          cell.type === 'number' || cell.type === 'date'
-            ? cell.mask
-            : undefined,
-        w:
-          cell.type === 'number' || cell.type === 'date'
-            ? cell.formatted
-            : undefined,
-      } as XLSX.CellObject),
-  );
+    const { headerRow = [], content, contentStructure } = data;
 
-  const rowsXLSX: XLSX.CellObject[][] = rows.map(item =>
-    item.map(
-      cell =>
-        ({
-          t: convertType(cell.type),
-          v: cell.value,
-          c: cell.comment?.map(comment => ({
-            t: comment.text,
-            a: comment.author,
-          })),
-          F: cell.formulaRange,
-          f: cell.formula,
-          l: cell.hyperlink && {
-            Target: cell.hyperlink.target,
-            Tooltip: cell.hyperlink.tooltip,
-          },
-          s: {
-            ...bodyStyle,
-            ...(cell.style ?? {}),
-          },
-          z:
-            cell.type === 'number' || cell.type === 'date'
-              ? cell.mask
-              : undefined,
-          w:
-            cell.type === 'number' || cell.type === 'date'
-              ? cell.formatted
-              : undefined,
-        } as XLSX.CellObject),
-    ),
-  );
+    const headerXLSX: XLSX.CellObject[] = headerRow.map((cell) =>
+        transformIntoCellObject(cell, headerStyle),
+    );
 
-  const wb = executeXLSX([headerXLSX, ...rowsXLSX], columnWidths);
-  wb.Props = sheetProps;
+    const rowsAdapter = getRowsStructure(content, contentStructure);
 
-  return exportFile(exportAs, wb, fileName);
+    const rowsXLSX: XLSX.CellObject[][] = rowsAdapter.map((item) =>
+        item.map((cell) => transformIntoCellObject(cell, bodyStyle)),
+    );
+
+    const wb = executeXLSX([headerXLSX, ...rowsXLSX], columnWidths, merges);
+    wb.Props = sheetProps;
+
+    return exportFile(exportAs, wb, fileName);
 };
 
 export const exportmeExcel = (
-  data: Record<string, any>[],
-  fileName: string,
-  exportAs: ExportationType,
-  options?: ExportMeExcelOptions,
+    data: Record<string, any>[],
+    fileName: string,
+    exportAs: ExportationType,
+    options?: ExportMeExcelOptions,
 ) => {
-  validateData(data, fileName);
+    const headers: XLSX.CellObject[] = Object.keys(data[0]).map((item) => ({
+        v: item,
+        t: 's',
+        s: options?.headerStyle,
+    }));
 
-  const headers: XLSX.CellObject[] = Object.keys(data[0]).map(item => ({
-    v: item,
-    t: 's',
-    s: options?.headerStyle,
-  }));
+    const body: XLSX.CellObject[][] = data.map((item) =>
+        Object.keys(item).map((key) => ({
+            v: item[key],
+            t: 's',
+            s: options?.bodyStyle,
+        })),
+    );
 
-  const body: XLSX.CellObject[][] = data.map(item =>
-    Object.keys(item).map(key => ({
-      v: item[key],
-      t: 's',
-      s: options?.bodyStyle,
-    })),
-  );
+    const wb = executeXLSX([headers, ...body], options?.columnWidths);
 
-  const wb = executeXLSX([headers, ...body], options?.columnWidths);
+    wb.Props = options?.sheetProps;
 
-  wb.Props = options?.sheetProps;
-
-  return exportFile(exportAs, wb, fileName);
+    return exportFile(exportAs, wb, fileName);
 };
 
 export const exportmeToCsv = (data: any[], fileName: string) => {
-  if (
-    typeof fileName !== 'string' ||
-    Object.prototype.toString.call(fileName) !== '[object String]'
-  ) {
-    throw new Error(
-      'Invalid input types: First Params should be an Array and the second one a String',
-    );
-  }
+    if (
+        typeof fileName !== 'string' ||
+        Object.prototype.toString.call(fileName) !== '[object String]'
+    ) {
+        throw new Error(
+            'Invalid input types: First Params should be an Array and the second one a String',
+        );
+    }
 
-  if (window) {
-    const computedCSV = new Blob([objectToSemicolons(data)], {
-      type: 'text/csv;charset=utf-8',
-    });
+    if (window) {
+        const computedCSV = new Blob([objectToSemicolons(data)], {
+            type: 'text/csv;charset=utf-8',
+        });
 
-    const csvLink = window.URL.createObjectURL(computedCSV);
-    downloadFile(csvLink, `${fileName}.csv`);
-  } else {
-    throw new Error(
-      'Window is not definided: You must be using it in a browser',
-    );
-  }
+        const csvLink = window.URL.createObjectURL(computedCSV);
+        downloadFile(csvLink, `${fileName}.csv`);
+    } else {
+        throw new Error(
+            'Window is not definided: You must be using it in a browser',
+        );
+    }
 };
