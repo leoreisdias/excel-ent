@@ -1,10 +1,13 @@
-export {
-  exportmeExcel,
-  exportmeToCsv,
-  exportmeExcelAdvanced,
-} from './functions';
+export { exportmeExcel, exportmeExcelAdvanced } from "./excel";
+export { exportmeToCsv } from "./csv";
 export type {
   ExcelEntCellObject,
   ExportMeExcelAdvancedProps,
   ExportMeExcelOptions,
-} from './types';
+  CellStyle,
+  ExcelEntContent,
+  ExcelEntDataStructure,
+  ExcelEntDataProps,
+  MergeProps,
+  MixedContent,
+} from "./types";
