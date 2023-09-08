@@ -41,7 +41,9 @@ const handleMixedStructure = (data: ExcelEntDataStructure) => {
 
       rows.push(...transposed);
       
-      currentIndex = nextRowIndex === -1 ? currentIndex : nextRowIndex;
+      if (nextRowIndex === -1) break;
+
+      currentIndex = nextRowIndex;
     }
   }
 
