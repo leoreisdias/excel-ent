@@ -40,7 +40,7 @@ const handleMixedStructure = (data: ExcelEntDataStructure) => {
       const transposed = transposeMatrixWithPadding(columnsContent);
 
       rows.push(...transposed);
-      currentIndex = nextRowIndex;
+      currentIndex = nextRowIndex === -1 ? currentIndex : nextRowIndex - 1;
     }
   }
 
