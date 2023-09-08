@@ -53,6 +53,8 @@ const exportFile = (
   if (exportAs.type === "filepath") {
     return XLSX.writeFile(wb, exportAs.path);
   }
+
+  return null;
 };
 
 export const exportmeExcelAdvanced = ({
@@ -97,7 +99,7 @@ export const exportmeExcelAdvanced = ({
 
   if (loggingMatrix) {
     console.info(
-      `💡 Excel-Ent - Logging Matrix: ${JSON.stringify(rowsAdapter)}`
+      `💡 Excel-Ent:Logging-Matrix: ${JSON.stringify(rowsAdapter)}`
     );
   }
 
