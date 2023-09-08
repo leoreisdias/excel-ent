@@ -5,7 +5,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "The purpose of this lib is to help you export data in Excel and CSV.",
+  "description": "The purpose of this lib is to help you export data in Excel and CSV. It's a SheetJS wrapper.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
