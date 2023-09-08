@@ -8,7 +8,7 @@ const downloadFile = (output: string, fileName: string): void => {
   link.click();
 };
 
-export const exportmeToCsv = (data: any[], fileName: string) => {
+export const exportmeToCsv = (data: any[], fileName: string): void => {
   if (
     typeof fileName !== "string" ||
     Object.prototype.toString.call(fileName) !== "[object String]"
