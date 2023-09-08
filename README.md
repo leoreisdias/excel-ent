@@ -3,6 +3,8 @@
 [![NPM](https://img.shields.io/npm/v/excel-ent)](https://www.npmjs.com/package/excel-ent)
 [![npm](https://img.shields.io/npm/l/excel-ent)](https://github.com/leoreisdias/excel-ent/blob/main/LICENSE)
 
+#### PT-BR Documentation: [Notion - Excel-ent PT-BR](https://leord.notion.site/Excel-ent-Documenta-o-PT-BR-6b12e6d92d554b08b467b8ee17c1286c?pvs=4)
+
 # Sumário
 
 - [Description](#description)
@@ -32,7 +34,7 @@
 
 ## Description
 
-[excel-ent](https://github.com/leoreisdias/excel-ent.git) is a helper library that simplifies exporting data to XLSX and CSV using the SheetJS CE library.
+[excel-ent](https://github.com/leoreisdias/excel-ent.git) is a helper library that simplifies exporting data to XLSX and CSV using the SheetJS CE library. Now it can be used in **client browsers** and **backend servers**.
 
 ## Installation
 
@@ -293,7 +295,7 @@ Resulting Matrix and Excel structure:
 ```
 
 When `contentStructure` is "columns":
-- `content` is a matrix of `ExcelEntContent`. Each element can be an `ExcelEntCellObject`, number, string, null, or undefined. In this structure, the Excel-ent library will transform the column matrix into a row matrix by taking the transpose of the original matrix. Each column in the content matrix corresponds to a row in the worksheet.
+- `content` is a matrix of `ExcelEntContent`. Each element can be an `ExcelEntCellObject`, number, string, null, or undefined. In this structure, the Excel-ent library will transform the column matrix into a row matrix by taking the transpose of the original matrix. Each column in the content matrix corresponds to a column in the worksheet.
 
 Example:
 ```ts
@@ -320,6 +322,8 @@ Resulting Matrix (Transpose of the Original Matrix) and Excel structure:
 
 When contentStructure is "mixed":
 - `content` is an array of `MixedContent` objects. Each `MixedContent` object represents either a row or a column in the matrix, specified by the `type` attribute.
+  - When `type` is **"row"**: The array in the `value` attribute will be directly incorporated into the matrix as a row, without any additional processing.
+  - When `type` is **"column"**: The array in the `value` attribute will represent a column in the sheet. During exportation the code will group all consecutive "column" types in the value attribute until the next "row" type is encountered. It will then transform this group of columns into a group of rows, resulting in a transposed structure, and this transformed structure will be inserted in the final matrix.
 
 Example:
 ```ts
@@ -517,4 +521,4 @@ Special thanks to the following libraries for their invaluable contributions:
 - [xlsx-js-style](https://github.com/gitbrent/xlsx-js-style): This library played a pivotal role in enabling us to seamlessly incorporate styling and formatting options into Excel-ent.
 
 
-### Thank you and be free to contribute
+### Thank you and be free to contribute 🚀
