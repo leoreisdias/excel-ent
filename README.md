@@ -53,11 +53,13 @@ Excel-ent provides three main functions for exporting data: `exportmeExcel`, `ex
 ### exportmeExcel
 
 ```ts
-exportmeExcel(data: any[], fileName: string, 
+exportmeExcel({
+  data: Record<string, any>[] | PaginatedObjectContentProps[],
+  fileName: string,
   exportAs: {
     type: 'buffer' | 'base64' | 'download' | 'filepath';
     path?: string; // Required if exportAs type is 'filepath'
-  }, 
+  },
   options?: {
     headerStyle?: XLSX.CellStyle;
     bodyStyle?: XLSX.CellStyle;
@@ -66,12 +68,13 @@ exportmeExcel(data: any[], fileName: string,
     globalRowHeight?: number;
     sheetProps?: XLSX.FullProperties;
     stripedRows?: boolean;
+  }
 })
 ```
 
 #### Parameters
 
-- `data`: Required, must be an array of objects.
+- `data`: Required, must be an array of objects or `PaginatedObjectContentProps` _(if you need multiple worksheet tabs)_.
 - `fileName`: Required, the name of the generated file.
 - `options`: Optional, receives the following attributes:
   - `headerStyle` and `bodyStyle`: Both receive styles in the format of XLSX.CellStyle. You can check the available options [here in the xlsx-js-style](https://github.com/gitbrent/xlsx-js-style#cell-style-properties)
@@ -82,6 +85,50 @@ exportmeExcel(data: any[], fileName: string,
   - `stripedRows`: Optional, alternates row colors between white (customizable via cell styling) and light gray (F2F2F2) to improve data readability.
 - `exportAs`: An object specifying how to export the file, with a type attribute that can be 'buffer', 'base64', 'download', or 'filepath'. If 'filepath' is chosen, the path attribute becomes required.
 
+#### Data Prop
+
+As mentioned above, it can be an array of objects like:
+
+```json
+[
+  {
+    "name": "test",
+    "age": 20
+  }
+]
+```
+
+This will generate a sheet with "name" and "age" as headers with its contents.
+
+#### Data prop for multiple worksheet tabs
+
+If you want to have multiple tabs in your resulted XLS, the **"data"** prop can also be an array of `PaginatedObjectContentProps`, in it we have a **"content"** prop and a **"sheetName"** prop:
+
+```json
+[
+  {
+    "content": [
+      {
+        "name": "Test",
+        "age": 20
+      }
+    ],
+    "sheetName": "User"
+  },
+  {
+    "content": [
+      {
+        "task": "WTF?",
+        "score": 0
+      }
+    ],
+    "sheetName": "Questions"
+  }
+]
+```
+
+In this example, each **"content"** will be placed in a different sheet tab with the specified name in **"sheetName"**.
+
 #### Example
 
 ```ts
@@ -90,28 +137,28 @@ import { exportmeExcel } from "excel-ent";
 const data = [
   {
     id: 1,
-    name: 'Some Name',
+    name: "Some Name",
     age: 21,
   },
   {
     id: 2,
-    name: 'Some New Name',
+    name: "Some New Name",
     age: 23,
   },
   {
     id: 3,
-    name: 'Some Name Again',
+    name: "Some Name Again",
     age: 22,
   },
 ];
 
- exportmeExcel(
+exportmeExcel({
   data,
-  'Test File',
-  {
+  fileName: "Test File",
+  exportAs: {
     type: "download",
   },
-  {
+  options: {
     columnWidths: [30, 30, 30], // Each of 3 rows width
     globalRowHeight: 20, // Height for ALL rows
     headerStyle: {
@@ -123,7 +170,7 @@ const data = [
       font: {
         bold: true,
         color: {
-          rgb: "ffffff", // Must have at least 6 letters (FFF wouldn't work) 
+          rgb: "ffffff", // Must have at least 6 letters (FFF wouldn't work)
         },
       },
       alignment: {
@@ -141,8 +188,8 @@ const data = [
       },
     },
     stripedRows: true,
-  }
-);
+  },
+});
 ```
 
 Output
@@ -152,6 +199,7 @@ Output
 ---
 
 ### exportmeToCsv
+
 `exportmeToCsv(data: any[], title: string)`
 
 #### Parameters
@@ -160,6 +208,7 @@ Output
 - `title`: Required, the name of the generated CSV file.
 
 #### Example
+
 ```ts
 import { exportmeToCsv } from "excel-ent";
 
@@ -185,6 +234,7 @@ exportmeToCsv(data, "MyReport");
 ```
 
 ### exportmeExcelAdvanced
+
 ```ts
 exportmeExcelAdvanced(options: {
   data: ExcelMeDataProps;
@@ -215,7 +265,7 @@ exportmeExcelAdvanced(options: {
   - `sheetProps`: Additional properties for the worksheet, following XLSX.FullProperties. You can check the [official docs for more details...](https://docs.sheetjs.com/docs/csf/book#file-properties)
 - `exportAs`: An object specifying how to export the file, with a type attribute that can be 'buffer', 'base64', 'download', or 'filepath'. If 'filepath' is chosen, the path attribute becomes required.
 - `merges`: Optional, merges cells within the worksheet based on specified start and end coordinates.
-`loggingMatrix`: Optional, logs the resulting matrix before export for debugging purposes.
+  `loggingMatrix`: Optional, logs the resulting matrix before export for debugging purposes.
 - `data`: Required, defines the data structure.
 
 ### `exportmeExcelAdvanced` exclusive props
@@ -255,6 +305,7 @@ When set to true, it enables the logging of the resulting matrix in the browser 
     Usage: By configuring loggingMatrix as true, you can view the matrix content in the log, which can be helpful for debugging and troubleshooting any issues related to data formatting or structure.
 
 ---
+
 #### `exportmeExcelAdvanced`: the `data` property
 
 The "data" property is a fundamental aspect of the Excel-ent library, and it plays a pivotal role in configuring the content structure of the worksheet to be exported. It is strongly typed using the `ExcelEntDataProps` interface.
@@ -268,9 +319,11 @@ The "data" property is a fundamental aspect of the Excel-ent library, and it pla
 The "content" property varies based on the selected "contentStructure."
 
 When `contentStructure` is "rows":
+
 - `content` is a matrix of `ExcelEntContent`. Each element can be an `ExcelEntCellObject`, number, string, null, or undefined. In this structure, each row in the content matrix corresponds to a row in the worksheet.
 
 Example:
+
 ```ts
 data: {
   contentStructure: "rows",
@@ -286,18 +339,20 @@ data: {
 Resulting Matrix and Excel structure:
 
 ```ts
-[  
-  ['ID', 'Name', 'Age'],
-  [1, 'John',],
-  [2,, 28], // null or undefined values result in empty cells
-  [3, 'Bob', 35]
-]
+[
+  ["ID", "Name", "Age"],
+  [1, "John"],
+  [2, , 28], // null or undefined values result in empty cells
+  [3, "Bob", 35],
+];
 ```
 
 When `contentStructure` is "columns":
+
 - `content` is a matrix of `ExcelEntContent`. Each element can be an `ExcelEntCellObject`, number, string, null, or undefined. In this structure, the Excel-ent library will transform the column matrix into a row matrix by taking the transpose of the original matrix. Each column in the content matrix corresponds to a column in the worksheet.
 
 Example:
+
 ```ts
 data: {
   contentStructure: "columns",
@@ -311,21 +366,24 @@ data: {
 ```
 
 Resulting Matrix (Transpose of the Original Matrix) and Excel structure:
+
 ```ts
-[  
-  ['ID', 'Name', 'Age'],
-  [1, 'John', 30],
-  [2, 'Alice', 28],
-  [3, 'Bob', 35]
-]
+[
+  ["ID", "Name", "Age"],
+  [1, "John", 30],
+  [2, "Alice", 28],
+  [3, "Bob", 35],
+];
 ```
 
 When contentStructure is "mixed":
+
 - `content` is an array of `MixedContent` objects. Each `MixedContent` object represents either a row or a column in the matrix, specified by the `type` attribute.
   - When `type` is **"row"**: The array in the `value` attribute will be directly incorporated into the matrix as a row, without any additional processing.
   - When `type` is **"column"**: The array in the `value` attribute will represent a column in the sheet. During exportation the code will group all consecutive "column" types in the value attribute until the next "row" type is encountered. It will then transform this group of columns into a group of rows, resulting in a transposed structure, and this transformed structure will be inserted in the final matrix.
 
 Example:
+
 ```ts
 data: {
   contentStructure: "mixed",
@@ -355,14 +413,15 @@ data: {
 ```
 
 Resulting Matrix and Excel structure:
+
 ```ts
-[  
-  ['ID', 'Name', 'Age'],
-  [1, 'John', 30],
-  [2, 'Alice', 28],
-  [3, 'Bob', 35],
-  ['some cell',,]
-]
+[
+  ["ID", "Name", "Age"],
+  [1, "John", 30],
+  [2, "Alice", 28],
+  [3, "Bob", 35],
+  ["some cell", ,],
+];
 ```
 
 In the "mixed" content structure, you can specify whether each element represents a row or a column, allowing for flexible data organization. The Excel-ent library will handle the transformation accordingly.
@@ -379,24 +438,24 @@ The `ExcelEntCellObject` type is as follows:
 
 ```ts
 type BooleanCell = {
-  type: 'boolean';
+  type: "boolean";
   value: boolean;
 };
 
 type StringCell = {
-  type: 'string';
+  type: "string";
   value: string;
 };
 
 type NumberCell = {
-  type: 'number';
+  type: "number";
   value: number;
   formatted?: string;
   mask?: string;
 };
 
 type DateCell = {
-  type: 'date';
+  type: "date";
   value: Date | string;
   formatted?: string;
   mask?: string;
@@ -413,7 +472,7 @@ type Cell = {
     author: string;
     text: string;
   }[];
-  style?: XLSX.CellStyle; 
+  style?: XLSX.CellStyle;
 };
 
 export type ExcelEntCellObject = Cell &
@@ -445,61 +504,65 @@ const data = [
   },
 ];
 
-const content: ExcelEntContent[][] = data.map((item, index) => [
-  item.id,
-  {
-    type: 'string',
-    value: item.name,
-    style: {
-        fill: {
-          bgColor: {
-            rgb: 'FFFF00',
+const content: ExcelEntContent[][] = data.map(
+  (item, index) =>
+    [
+      item.id,
+      {
+        type: "string",
+        value: item.name,
+        style: {
+          fill: {
+            bgColor: {
+              rgb: "FFFF00",
+            },
           },
         },
-    },
-  },
-  {
-    type: 'number',
-    value: item.value,
-    formatted: `${item.value} years`,
-    comment: [
+      },
       {
-        author: 'User',
-        text: 'This is a comment'
-      }
-    ]
-  },
-] as ExcelEntContent[]);
+        type: "number",
+        value: item.value,
+        formatted: `${item.value} years`,
+        comment: [
+          {
+            author: "User",
+            text: "This is a comment",
+          },
+        ],
+      },
+    ] as ExcelEntContent[]
+);
 
 return exportmeExcelAdvanced({
   fileName: `Example`,
   options: {
-    headerStyle: { 
+    headerStyle: {
       font: {
-        sz: 40
-      }
+        sz: 40,
+      },
     },
-    bodyStyle: { 
+    bodyStyle: {
       font: {
-        sz: 16
-      }
+        sz: 16,
+      },
     },
     sheetProps: {
       Title: `Additional Info`,
     },
   },
   data: {
-      contentStructure: "column",
-      headerRow: ['ID', 'Name', 'Age'],
-      content: content
+    contentStructure: "column",
+    headerRow: ["ID", "Name", "Age"],
+    content: content,
   },
   exportAs: {
-    type: 'buffer',
+    type: "buffer",
   },
 });
 ```
 
 ---
+
 ### Types
 
 You can import the Excel-ent types to assist in usage and preparation.
@@ -519,6 +582,5 @@ Special thanks to the following libraries for their invaluable contributions:
 - [SheetJS CE](https://github.com/SheetJS/sheetjs): A fundamental framework that serves as the backbone for Excel-ent, providing powerful export functionality and a wide range of features.
 
 - [xlsx-js-style](https://github.com/gitbrent/xlsx-js-style): This library played a pivotal role in enabling us to seamlessly incorporate styling and formatting options into Excel-ent.
-
 
 ### Thank you and be free to contribute 🚀

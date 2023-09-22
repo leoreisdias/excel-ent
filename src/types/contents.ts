@@ -28,3 +28,8 @@ export type ExcelEntDataStructure = MixedStructure | UniqueStructure;
 export type ExcelEntDataProps = {
   headerRow?: ExcelEntContent[];
 } & ExcelEntDataStructure;
+
+export type PaginatedObjectContentProps = {
+  content: Record<string, any>[];
+  sheetName: string;
+};

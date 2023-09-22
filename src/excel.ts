@@ -7,10 +7,11 @@ import {
   transformIntoCellObject,
 } from "./helpers/transform";
 import { MergeProps } from "./types";
+import { PaginatedObjectContentProps } from "./types/contents";
 import {
   ExportationType,
   ExportMeExcelAdvancedProps,
-  ExportMeExcelOptions,
+  ExportMeExcelProps,
 } from "./types/functions";
 
 const executeXLSX = (
@@ -19,7 +20,6 @@ const executeXLSX = (
   rowsHeights?: number[],
   merges?: MergeProps[]
 ) => {
-  const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(data);
   ws["!cols"] = columnWidths?.map((width) => ({ width }));
   ws["!rows"] = rowsHeights?.map((height) => ({ hpx: height }));
@@ -28,9 +28,7 @@ const executeXLSX = (
     e: { r: item.end.row, c: item.end.column },
   }));
 
-  XLSX.utils.book_append_sheet(wb, ws);
-
-  return wb;
+  return ws;
 };
 
 const exportFile = (
@@ -88,30 +86,45 @@ export const exportmeExcelAdvanced = ({
 
   const finalMatrix = headerXLSX ? [headerXLSX, ...rowsXLSX] : rowsXLSX;
 
-  const wb = executeXLSX(
+  const wb = XLSX.utils.book_new();
+
+  const ws = executeXLSX(
     finalMatrix,
     columnWidths,
     getRowHeights(rowHeights, rowsXLSX.length, globalRowHeight),
     merges
   );
 
+  XLSX.utils.book_append_sheet(wb, ws);
+
   wb.Props = sheetProps;
 
   if (loggingMatrix) {
-    console.info(
-      `💡 Excel-Ent:Logging-Matrix: ${JSON.stringify(rowsAdapter)}`
-    );
+    console.info(`💡 Excel-Ent:Logging-Matrix: ${JSON.stringify(rowsAdapter)}`);
   }
 
   return exportFile(exportAs, wb, fileName);
 };
 
-export const exportmeExcel = (
-  data: Record<string, any>[],
-  fileName: string,
-  exportAs: ExportationType,
-  options?: ExportMeExcelOptions & { stripedRows?: boolean }
-) => {
+const transformData = (
+  data: Record<string, any>[]
+): PaginatedObjectContentProps[] => {
+  if (
+    !!data[0]?.content &&
+    Array.isArray(data[0]?.content) &&
+    !!data[0]?.sheetName
+  )
+    return data as PaginatedObjectContentProps[];
+
+  return [{ content: data, sheetName: "Sheet 1" }];
+};
+
+export const exportmeExcel = ({
+  data,
+  fileName,
+  exportAs,
+  options,
+}: ExportMeExcelProps) => {
   const {
     bodyStyle = {},
     columnWidths = [],
@@ -122,31 +135,40 @@ export const exportmeExcel = (
     stripedRows,
   } = options ?? {};
 
-  const headers: XLSX.CellObject[] = Object.keys(data[0]).map((item) => ({
-    v: item,
-    t: "s",
-    s: headerStyle,
-  }));
+  const wb = XLSX.utils.book_new();
 
-  const body: XLSX.CellObject[][] = data.map((item, index) =>
-    Object.keys(item).map((key) => {
-      const isRowPainted = stripedRows && index % 2 === 0;
+  const paginatedData = transformData(data);
 
-      return {
-        v: item[key],
-        t: "s",
-        s: isRowPainted ? applyStrippedRowStyle(bodyStyle) : bodyStyle,
-      };
-    })
-  );
+  paginatedData.forEach(({ content: sheet, sheetName }) => {
+    const headers: XLSX.CellObject[] = Object.keys(sheet[0]).map((item) => ({
+      v: item,
+      t: "s",
+      s: headerStyle,
+    }));
 
-  const finalMatrix = [headers, ...body];
+    const body: XLSX.CellObject[][] = sheet.map(
+      (item: Record<string, any>, index: number) =>
+        Object.keys(item).map((key) => {
+          const isRowPainted = stripedRows && index % 2 === 0;
 
-  const wb = executeXLSX(
-    finalMatrix,
-    columnWidths,
-    getRowHeights(rowHeights, finalMatrix.length, globalRowHeight)
-  );
+          return {
+            v: item[key],
+            t: "s",
+            s: isRowPainted ? applyStrippedRowStyle(bodyStyle) : bodyStyle,
+          };
+        })
+    );
+
+    const finalMatrix = [headers, ...body];
+
+    const ws = executeXLSX(
+      finalMatrix,
+      columnWidths,
+      getRowHeights(rowHeights, finalMatrix.length, globalRowHeight)
+    );
+
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  });
 
   wb.Props = sheetProps;
 

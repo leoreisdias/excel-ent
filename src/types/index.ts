@@ -4,9 +4,11 @@ export type {
   ExcelEntContent,
   ExcelEntDataStructure,
   MixedContent,
+  PaginatedObjectContentProps,
 } from "./contents";
 export type {
   ExportMeExcelAdvancedProps,
   ExportMeExcelOptions,
   MergeProps,
+  ExportMeExcelProps,
 } from "./functions";

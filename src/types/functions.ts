@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx-js-style";
 
 import { CellStyle } from "./cell";
-import { ExcelEntDataProps } from "./contents";
+import { ExcelEntDataProps, PaginatedObjectContentProps } from "./contents";
 
 export type ExportMeExcelOptions = {
   headerStyle?: CellStyle;
@@ -33,4 +33,11 @@ export type ExportMeExcelAdvancedProps = {
   merges?: MergeProps[];
   options?: ExportMeExcelOptions;
   loggingMatrix?: boolean;
+};
+
+export type ExportMeExcelProps = {
+  data: Record<string, any>[] | PaginatedObjectContentProps[];
+  fileName: string;
+  exportAs: ExportationType;
+  options?: ExportMeExcelOptions & { stripedRows?: boolean };
 };
