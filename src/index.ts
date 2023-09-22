@@ -10,4 +10,5 @@ export type {
   ExcelEntDataProps,
   MergeProps,
   MixedContent,
+  PaginatedObjectContentProps,
 } from "./types";
