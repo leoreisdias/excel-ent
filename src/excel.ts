@@ -150,6 +150,21 @@ export const exportmeExcel = ({
       (item: Record<string, any>, index: number) =>
         Object.keys(item).map((key) => {
           const isRowPainted = stripedRows && index % 2 === 0;
+          if (typeof item[key] === "number") {
+            return {
+              v: item[key],
+              t: "n",
+              s: isRowPainted ? applyStrippedRowStyle(bodyStyle) : bodyStyle,
+            };
+          }
+
+          if (item[key] instanceof Date) {
+            return {
+              v: item[key],
+              t: "d",
+              s: isRowPainted ? applyStrippedRowStyle(bodyStyle) : bodyStyle,
+            };
+          }
 
           return {
             v: item[key],
