@@ -9,10 +9,35 @@ import {
 import { MergeProps } from "./types";
 import { PaginatedObjectContentProps } from "./types/contents";
 import {
+  ExcelAdvancedOptionsBase64,
+  ExcelAdvancedOptionsBuffer,
+  ExcelAdvancedOptionsDownload,
+  ExcelAdvancedOptionsFilePath,
+  ExcelOptionsBase64,
+  ExcelOptionsBuffer,
+  ExcelOptionsDownload,
+  ExcelOptionsFilePath,
   ExportationType,
+  ExportationTypeBase64,
+  ExportationTypeBuffer,
+  ExportationTypeDownload,
+  ExportationTypeFilePath,
   ExportMeExcelAdvancedProps,
   ExportMeExcelProps,
 } from "./types/functions";
+
+const transformData = (
+  data: Record<string, any>[]
+): PaginatedObjectContentProps[] => {
+  if (
+    !!data[0]?.content &&
+    Array.isArray(data[0]?.content) &&
+    !!data[0]?.sheetName
+  )
+    return data as PaginatedObjectContentProps[];
+
+  return [{ content: data, sheetName: "Sheet 1" }];
+};
 
 const executeXLSX = (
   data: XLSX.CellObject[][],
@@ -31,11 +56,11 @@ const executeXLSX = (
   return ws;
 };
 
-const exportFile = (
+function exportFile(
   exportAs: ExportationType,
   wb: XLSX.WorkBook,
   fileName: string
-) => {
+): Promise<string | ArrayBuffer | void> {
   if (exportAs.type === "base64") {
     return XLSX.write(wb, { type: "base64", bookType: "xlsx" });
   }
@@ -45,24 +70,39 @@ const exportFile = (
   }
 
   if (exportAs.type === "download") {
-    return XLSX.writeFile(wb, `${fileName}.xlsx`);
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
+    return;
   }
 
   if (exportAs.type === "filepath") {
-    return XLSX.writeFile(wb, exportAs.path);
+    XLSX.writeFile(wb, exportAs.path);
+    return;
   }
 
-  return null;
-};
+  return;
+}
 
-export const exportmeExcelAdvanced = ({
+export function exportmeExcelAdvanced(
+  options: ExcelAdvancedOptionsBase64
+): Promise<string>;
+export function exportmeExcelAdvanced(
+  options: ExcelAdvancedOptionsBuffer
+): Promise<ArrayBuffer>;
+export function exportmeExcelAdvanced(
+  options: ExcelAdvancedOptionsDownload
+): Promise<void>;
+export function exportmeExcelAdvanced(
+  options: ExcelAdvancedOptionsFilePath
+): Promise<void>;
+
+export function exportmeExcelAdvanced({
   fileName,
   data,
   options,
   exportAs,
   merges,
   loggingMatrix,
-}: ExportMeExcelAdvancedProps) => {
+}: ExportMeExcelAdvancedProps): Promise<string | ArrayBuffer | void> {
   const {
     bodyStyle = {},
     columnWidths = [],
@@ -103,28 +143,30 @@ export const exportmeExcelAdvanced = ({
     console.info(`💡 Excel-Ent:Logging-Matrix: ${JSON.stringify(rowsAdapter)}`);
   }
 
-  return exportFile(exportAs, wb, fileName);
-};
+  if (exportAs.type === "filepath") {
+    return exportFile(exportAs as ExportationTypeFilePath, wb, fileName);
+  } else if (exportAs.type === "download") {
+    return exportFile(exportAs as ExportationTypeDownload, wb, fileName);
+  } else if (exportAs.type === "buffer") {
+    return exportFile(exportAs as ExportationTypeBuffer, wb, fileName);
+  } else {
+    return exportFile(exportAs as ExportationTypeBase64, wb, fileName);
+  }
+}
 
-const transformData = (
-  data: Record<string, any>[]
-): PaginatedObjectContentProps[] => {
-  if (
-    !!data[0]?.content &&
-    Array.isArray(data[0]?.content) &&
-    !!data[0]?.sheetName
-  )
-    return data as PaginatedObjectContentProps[];
+export function exportmeExcel(options: ExcelOptionsBase64): Promise<string>;
+export function exportmeExcel(
+  options: ExcelOptionsBuffer
+): Promise<ArrayBuffer>;
+export function exportmeExcel(options: ExcelOptionsDownload): Promise<void>;
+export function exportmeExcel(options: ExcelOptionsFilePath): Promise<void>;
 
-  return [{ content: data, sheetName: "Sheet 1" }];
-};
-
-export const exportmeExcel = ({
+export function exportmeExcel({
   data,
   fileName,
   exportAs,
   options,
-}: ExportMeExcelProps) => {
+}: ExportMeExcelProps): Promise<string | ArrayBuffer | void> {
   const {
     bodyStyle = {},
     columnWidths = [],
@@ -150,6 +192,7 @@ export const exportmeExcel = ({
       (item: Record<string, any>, index: number) =>
         Object.keys(item).map((key) => {
           const isRowPainted = stripedRows && index % 2 === 0;
+
           if (typeof item[key] === "number") {
             return {
               v: item[key],
@@ -187,5 +230,13 @@ export const exportmeExcel = ({
 
   wb.Props = sheetProps;
 
-  return exportFile(exportAs, wb, fileName);
-};
+  if (exportAs.type === "filepath") {
+    return exportFile(exportAs as ExportationTypeFilePath, wb, fileName);
+  } else if (exportAs.type === "download") {
+    return exportFile(exportAs as ExportationTypeDownload, wb, fileName);
+  } else if (exportAs.type === "buffer") {
+    return exportFile(exportAs as ExportationTypeBuffer, wb, fileName);
+  } else {
+    return exportFile(exportAs as ExportationTypeBase64, wb, fileName);
+  }
+}
