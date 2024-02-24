@@ -32,7 +32,7 @@ const handleMixedStructure = (data: ExcelEntDataStructure) => {
 
       const columns = data.content.slice(
         currentIndex,
-        nextRowIndex !== -1 ? nextRowIndex : undefined
+        nextRowIndex !== -1 ? nextRowIndex + 1 : undefined
       );
 
       const columnsContent = columns.map((item) => item.value);
@@ -40,7 +40,7 @@ const handleMixedStructure = (data: ExcelEntDataStructure) => {
       const transposed = transposeMatrixWithPadding(columnsContent);
 
       rows.push(...transposed);
-      
+
       if (nextRowIndex === -1) break;
 
       currentIndex = nextRowIndex;
